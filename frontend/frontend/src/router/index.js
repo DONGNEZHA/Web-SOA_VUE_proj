@@ -13,7 +13,7 @@ import Home from '../views/Home.vue'
 import HitSong from '../views/User/HitSong.vue'
 import Singer from '../views/User/Singer.vue'
 import Rank from '../views/User/Rank.vue'
-
+import playlist from '../views/User/playlist'
 
 // import TeacherQualification from '../views/Teacher/TeacherQualification.vue'
 
@@ -89,6 +89,11 @@ const routes = [
             path: '/Rank',
             name: 'Rank',
             component: Rank
+        },
+        {
+            path: '/playlist',
+            name: 'playlist',
+            component: playlist
         },
         {
             path: '/AdminMine',
