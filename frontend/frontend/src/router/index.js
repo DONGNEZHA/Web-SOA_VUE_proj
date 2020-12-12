@@ -28,6 +28,7 @@ import UserSystemMessage from '../views/User/UserSystemMessage.vue'
 
 
 
+// import PlayListDetail from '../views/User/PlayListDetail'
 
 // import AdminInformation from '../views/Admin/AdminInformation.vue'
 // import AdminQualification from '../views/Admin/AdminQualification.vue'
@@ -80,6 +81,11 @@ const routes = [
             name: 'HitSong',
             component: HitSong
         },
+        //
+        // {
+        //     path: "/play-list-detail/:id",
+        //     component: PlayListDetail
+        //   },
         {
             path: '/Singer',
             name: 'Singer',

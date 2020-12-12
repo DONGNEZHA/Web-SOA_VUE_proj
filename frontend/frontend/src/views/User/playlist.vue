@@ -16,7 +16,7 @@
         </div>
         <div class="play-wrap">
           <span class="iconfont icon-circle-play"></span>
-          <span class="text">播放全部</span>
+          <span class="text" @click="playAll">播放全部</span>
         </div>
         <div class="tag-wrap">
           <span class="title">标签:</span>
@@ -148,6 +148,7 @@
 import axios from "axios";
 export default {
   name: "playlist",
+
   data() {
     return {
       activeIndex: "1",
@@ -163,7 +164,10 @@ export default {
       // 热门评论的个数
       hotCount: 0,
       // 普通评论
-      comments:[]
+      comments:[],
+              // 歌单列表
+        playListTable: [],
+
     };
   },
   created() {
@@ -212,6 +216,7 @@ export default {
     })
   },
   methods: {
+
     handleCurrentChange(val) {
       // console.log(`当前页: ${val}`);
       // 保存页码
@@ -233,7 +238,68 @@ export default {
         // 评论数据
         this.comments = res.data.comments
       })
-    }
+    },
+    
+          // 开始播放
+      playMusic(item) {
+        // 将当前播放列表赋值为全局播放列表
+        this.setPlayList(this.playlist)
+        this.isPlayMutation(false)
+        if (this.currentSong.id !== item.id) {
+          // 播放新的歌词
+          this.$bus.$emit("lyricPlay")
+        }
+        // 点击获取这一行歌曲信息 保存到store中
+        this.setCurrentSong(item)
+        // 加入播放记录
+        this.addPlayRecord()
+        console.log(100)
+        this.$bus.$emit("resetSliderValue")
+        setTimeout(() => {
+          // 歌词播放 / 暂停
+          this.$bus.$emit("lyricTogglePlay")
+          // 播放
+          this.play()
+        }, 20)
+      },
+      /*
+      // 暂停播放
+      pausePlay() {
+        this.isPlayMutation(true)
+        this.pause()
+        // 歌词暂停
+        this.$bus.$emit("lyricTogglePlay")
+      },
+          // 播放全部
+      playAll() {
+        // 将当前歌单设置为全局播放列表
+        this.setPlayList(this.playListTable)
+        // 从索引为 0 开始播放
+        this.setCurrentSong(this.playList[0])
+        setTimeout(() => {
+          this.play()
+          // 设置播放图标
+          this.setIsPlay(false)
+          // 将当前歌曲加入到播放记录列表中
+          if (this.playRecord.indexOf(this.currentSong) !== -1) {
+            this.playRecord.splice(this.playRecord.indexOf(this.currentSong), 1)
+            this.playRecord.unshift(this.currentSong)
+          } else {
+            this.playRecord.unshift(this.currentSong)
+          }
+        }, 20)
+      },
+            ...mapMutations([
+        "setPlayList",
+        "play",
+        "pause",
+        "setCurrentSong",
+        "setIsPlay",
+        "isPlayMutation",
+        "addPlayRecord",
+        "setPlayMode"
+      ])
+      */
   }
 };
 </script>
