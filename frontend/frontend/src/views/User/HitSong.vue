@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2020-11-30 19:45:11
- * @LastEditTime: 2020-12-02 18:48:12
+ * @LastEditTime: 2020-12-16 08:53:11
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \frontend\src\views\User\HitSong.vue
@@ -32,7 +32,7 @@
       </el-pagination>
     </div>
     <!--  -->
-        <loading v-if="isLoading"></loading>
+    <loading v-if="isLoading"></loading>
   </div>
 </template>
 <script>
@@ -47,7 +47,7 @@ import Loading from "../../components/common/Loading";
 export default {
   name: "HitSong",
   components: {
-     TagBar,
+    TagBar,
     SongSheetList,
     //Loading
   },
@@ -148,11 +148,11 @@ export default {
       });
     },
     // 获取歌单表 未完成只是全部歌单
-   _getSongSheet() {
+    _getSongSheet() {
       axios({
         url: "https://autumnfish.cn/top/playlist/",
         methods: "get",
-        params:this.songSheetParams,
+        params: this.songSheetParams,
       }).then((res) => {
         if (res.status === 200 && res.statusText === "OK") {
           // console.log(res)

@@ -16,7 +16,7 @@
         </div>
         <div class="play-wrap">
           <span class="iconfont icon-circle-play"></span>
-          <span class="text" @click="playAll">播放全部</span>
+          <span class="text">播放全部</span>
         </div>
         <div class="tag-wrap">
           <span class="title">标签:</span>
@@ -40,36 +40,44 @@
       <el-tab-pane label="歌曲列表" name="1">
         <table class="el-table playlit-table">
           <thead>
-          <th></th>
-          <th></th>
-          <th>音乐标题</th>
-          <th>歌手</th>
-          <th>专辑</th>
-          <th>时长</th>
+            <th></th>
+            <th></th>
+            <th>音乐标题</th>
+            <th>歌手</th>
+            <th>专辑</th>
+            <th>时长</th>
           </thead>
           <tbody>
-          <tr class="el-table__row" v-for="(item, index) in playlist.tracks" :key="index">
-            <td>{{ index + 1 }}</td>
-            <td>
-              <div class="img-wrap" @click="playMusic(item.id)">
-                <img :src="item.al.picUrl+'?param=130y130'" alt="" />
-                <span class="iconfont icon-play"></span>
-              </div>
-            </td>
-            <td>
-              <div class="song-wrap">
-                <div class="name-wrap">
-                  <!-- 名称 -->
-                  <span>{{ item.name }}</span>
-                  <!-- mv图标 -->
-                  <span v-if="item.mv !== 0" class="iconfont icon-mv" @click="toMv(item.mv)"></span>
+            <tr
+              class="el-table__row"
+              v-for="(item, index) in playlist.tracks"
+              :key="index"
+            >
+              <td>{{ index + 1 }}</td>
+              <td>
+                <div class="img-wrap" @click="PlayMusicComponent(item.id,item.ar[0].name,item.name)">
+                  <img :src="item.al.picUrl + '?param=130y130'" alt="" />
+                  <span class="iconfont icon-play"></span>
                 </div>
-              </div>
-            </td>
-            <td>{{ item.ar[0].name }}</td>
-            <td>{{ item.al.name }}</td>
-            <td>{{ item.dt | playTimeFormat }}</td>
-          </tr>
+              </td>
+              <td>
+                <div class="song-wrap">
+                  <div class="name-wrap">
+                    <!-- 名称 -->
+                    <span>{{ item.name }}</span>
+                    <!-- mv图标 -->
+                    <span
+                      v-if="item.mv !== 0"
+                      class="iconfont icon-mv"
+                      @click="toMv(item.mv)"
+                    ></span>
+                  </div>
+                </div>
+              </td>
+              <td>{{ item.ar[0].name }}</td>
+              <td>{{ item.al.name }}</td>
+              <td>{{ item.dt | playTimeFormat }}</td>
+            </tr>
           </tbody>
         </table>
       </el-tab-pane>
@@ -96,7 +104,7 @@
                 <!-- 评论的回复 -->
                 <div class="re-content" v-if="item.beReplied.length != 0">
                   <span class="name"
-                  >{{ item.beReplied[0].user.nickname }}：</span
+                    >{{ item.beReplied[0].user.nickname }}：</span
                   >
                   <span class="comment">{{ item.beReplied[0].content }}</span>
                 </div>
@@ -109,20 +117,22 @@
         <div class="comment-wrap">
           <p class="title">
             最新评论
-            <span class="number">( {{total}} )</span>
+            <span class="number">( {{ total }} )</span>
           </p>
           <div class="comments-wrap">
-            <div class="item" v-for="(item,index) in comments" :key="index">
+            <div class="item" v-for="(item, index) in comments" :key="index">
               <div class="icon-wrap">
                 <img :src="item.user.avatarUrl" alt="" />
               </div>
               <div class="content-wrap">
                 <div class="content">
-                  <span class="name">{{item.user.nickname}}：</span>
+                  <span class="name">{{ item.user.nickname }}：</span>
                   <span class="comment">{{ item.content }}</span>
                 </div>
-                <div class="re-content" v-if="item.beReplied.length!=0">
-                  <span class="name">{{ item.beReplied[0].user.nickname }}：</span>
+                <div class="re-content" v-if="item.beReplied.length != 0">
+                  <span class="name"
+                    >{{ item.beReplied[0].user.nickname }}：</span
+                  >
                   <span class="comment">{{ item.beReplied[0].content }}</span>
                 </div>
                 <div class="date">2020-02-12 17:26:11</div>
@@ -132,23 +142,30 @@
         </div>
         <!-- 分页器 -->
         <el-pagination
-            @current-change="handleCurrentChange"
-            background
-            layout="prev, pager, next"
-            :total="total"
-            :current-page="page"
+          @current-change="handleCurrentChange"
+          background
+          layout="prev, pager, next"
+          :total="total"
+          :current-page="page"
         ></el-pagination>
       </el-tab-pane>
     </el-tabs>
+    <!-- PlayBar -->
+    <!-- <play-bar :visible="visible" :id="currentSongId"></play-bar> -->
   </div>
 </template>
 
 <script>
 // 导入 axios
 import axios from "axios";
+// import PlayBar from "../../components/common/PlayBar";
+import PlayMusic from "../../components/common/PlayMusic";
 export default {
   name: "playlist",
-
+  components: {
+    // PlayBar,
+    PlayMusic,
+  },
   data() {
     return {
       activeIndex: "1",
@@ -164,10 +181,15 @@ export default {
       // 热门评论的个数
       hotCount: 0,
       // 普通评论
-      comments:[],
-              // 歌单列表
-        playListTable: [],
-
+      comments: [],
+      // 歌单列表
+      playListTable: [],
+      //
+      ID: "0000",
+      // 播放组件显示
+      visible: false,
+      // 当前播放歌曲的ID
+      currentSongId: "0000",
     };
   },
   created() {
@@ -176,9 +198,9 @@ export default {
       url: "https://autumnfish.cn/playlist/detail",
       method: "get",
       params: {
-        id: this.$route.query.key
-      }
-    }).then(res => {
+        id: this.$route.query.key,
+      },
+    }).then((res) => {
       // console.log(res)
       this.playlist = res.data.playlist;
     });
@@ -189,9 +211,9 @@ export default {
       params: {
         id: this.$route.query.key,
         // 传递类型
-        type: 2
-      }
-    }).then(res => {
+        type: 2,
+      },
+    }).then((res) => {
       // console.log(res)
       this.hotComment = res.data.hotComments;
       // 保存个数
@@ -200,107 +222,66 @@ export default {
 
     // 获取 最新评论
     axios({
-      url:"https://autumnfish.cn/comment/playlist",
-      method:"get",
-      params:{
-        id:this.$route.query.key,
-        limit:10,
-        offset:0
-      }
-    }).then(res=>{
+      url: "https://autumnfish.cn/comment/playlist",
+      method: "get",
+      params: {
+        id: this.$route.query.key,
+        limit: 10,
+        offset: 0,
+      },
+    }).then((res) => {
       // console.log(res)
       // 总个数
-      this.total = res.data.total
+      this.total = res.data.total;
       // 评论数据
-      this.comments = res.data.comments
-    })
+      this.comments = res.data.comments;
+    });
   },
   methods: {
-
     handleCurrentChange(val) {
       // console.log(`当前页: ${val}`);
       // 保存页码
-      this.page = val
+      this.page = val;
       // 重新获取数据
       axios({
-        url:"https://autumnfish.cn/comment/playlist",
-        method:"get",
-        params:{
-          id:this.$route.query.key,
-          limit:10,
+        url: "https://autumnfish.cn/comment/playlist",
+        method: "get",
+        params: {
+          id: this.$route.query.key,
+          limit: 10,
           // 根据页码计算
-          offset:(this.page-1)*10
-        }
-      }).then(res=>{
+          offset: (this.page - 1) * 10,
+        },
+      }).then((res) => {
         // console.log(res)
         // 总个数
-        this.total = res.data.total
+        this.total = res.data.total;
         // 评论数据
-        this.comments = res.data.comments
-      })
+        this.comments = res.data.comments;
+      });
     },
-    
-          // 开始播放
-      playMusic(item) {
-        // 将当前播放列表赋值为全局播放列表
-        this.setPlayList(this.playlist)
-        this.isPlayMutation(false)
-        if (this.currentSong.id !== item.id) {
-          // 播放新的歌词
-          this.$bus.$emit("lyricPlay")
-        }
-        // 点击获取这一行歌曲信息 保存到store中
-        this.setCurrentSong(item)
-        // 加入播放记录
-        this.addPlayRecord()
-        console.log(100)
-        this.$bus.$emit("resetSliderValue")
-        setTimeout(() => {
-          // 歌词播放 / 暂停
-          this.$bus.$emit("lyricTogglePlay")
-          // 播放
-          this.play()
-        }, 20)
-      },
-      /*
-      // 暂停播放
-      pausePlay() {
-        this.isPlayMutation(true)
-        this.pause()
-        // 歌词暂停
-        this.$bus.$emit("lyricTogglePlay")
-      },
-          // 播放全部
-      playAll() {
-        // 将当前歌单设置为全局播放列表
-        this.setPlayList(this.playListTable)
-        // 从索引为 0 开始播放
-        this.setCurrentSong(this.playList[0])
-        setTimeout(() => {
-          this.play()
-          // 设置播放图标
-          this.setIsPlay(false)
-          // 将当前歌曲加入到播放记录列表中
-          if (this.playRecord.indexOf(this.currentSong) !== -1) {
-            this.playRecord.splice(this.playRecord.indexOf(this.currentSong), 1)
-            this.playRecord.unshift(this.currentSong)
-          } else {
-            this.playRecord.unshift(this.currentSong)
-          }
-        }, 20)
-      },
-            ...mapMutations([
-        "setPlayList",
-        "play",
-        "pause",
-        "setCurrentSong",
-        "setIsPlay",
-        "isPlayMutation",
-        "addPlayRecord",
-        "setPlayMode"
-      ])
-      */
-  }
+    // 播放组件
+    PlayMusicComponent(id,ar_name,music_name) {
+      this.$router.push({path:'/playmusic',query:{id:id,ar_name:ar_name,music_name:music_name}});
+      // this.$router.push(`/play-list-detail/${id}`)
+    },
+    // 开始播放
+    // playMusic(id) {
+    //   console.log(id);
+    //   axios({
+    //     url: "https://autumnfish.cn/song/url?id=" + id,
+    //     methods: "get",
+    //   }).then((res) => {
+    //     if (res.status === 200 && res.statusText === "OK") {
+    //       console.log(res.data.data[0].id);
+    //       // this.hotTags = res.data.tags;
+    //       let audio = new Audio();
+    //       audio.src = res.data.data[0].url;
+    //       audio.play();
+    //     }
+    //   });
+    // },
+  },
 };
 </script>
 

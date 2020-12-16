@@ -14,7 +14,8 @@ import HitSong from '../views/User/HitSong.vue'
 import Singer from '../views/User/Singer.vue'
 import Rank from '../views/User/Rank.vue'
 import playlist from '../views/User/playlist'
-
+import playmusic from '../components/common/PlayMusic.vue'
+// import playbar from '../views/User/PlayBar.vue'
 // import TeacherQualification from '../views/Teacher/TeacherQualification.vue'
 
 import AdminMine from '../components/AdminMine.vue'
@@ -67,6 +68,11 @@ const routes = [
         component: Register
     },
     {
+        path: '/playmusic',
+        name: 'playmusic',
+        component: playmusic
+    },
+    {
         path: '/Main',
         name: 'Main',
         component: Main,
@@ -101,6 +107,7 @@ const routes = [
             name: 'playlist',
             component: playlist
         },
+
         {
             path: '/AdminMine',
             name: 'AdminMine',
